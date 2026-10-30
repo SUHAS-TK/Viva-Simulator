@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Performance Report – AI Viva Simulator</title>
+  <link rel="stylesheet" href="/static/css/main.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="/static/js/theme.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="/" class="nav-back">← Dashboard</a>
+      <span class="nav-sep">|</span>
+      <span class="nav-title">Performance Report</span>
+    </div>
+    <div class="nav-links">
+      <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Light / Dark mode">
+        <span class="theme-icon">☀️</span>
+        <span class="theme-label">Theme</span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="report-container">
+
+    <!-- Score Hero -->
+    <section class="report-hero card">
+      <div class="report-score-block">
+        <div class="big-score" id="bigScore">—</div>
+        <div class="grade-badge" id="gradeBadge">—</div>
+      </div>
+      <div class="report-meta">
+        <h2 id="reportTitle">Official Performance Report</h2>
+        <p id="execSummary" class="exec-summary"></p>
+        <div class="report-stats-row">
+          <div class="stat-pill">
+            <span class="stat-pill-num" id="reportQuestions">—</span>
+            <span class="stat-pill-label">Questions</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-pill-num" id="reportCorrect">—</span>
+            <span class="stat-pill-label">Correct</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-pill-num" id="reportPartial">—</span>
+            <span class="stat-pill-label">Partial</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-pill-num" id="reportIncorrect">—</span>
+            <span class="stat-pill-label">Incorrect</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Save Report & Send to Email Card -->
+    <section class="report-save-email-card" id="saveEmailCard">
+      <div class="save-email-header">
+        <div class="save-email-title">
+          <span>💾 Save &amp; ✉️ Send Report</span>
+        </div>
+        <span class="badge badge-info">Instant Delivery &amp; Export</span>
+      </div>
+
+      <div class="save-email-grid">
+        <!-- Save Options -->
+        <div class="save-action-box">
+          <div class="save-box-title">
+            <span>📥 Save Offline</span>
+          </div>
+          <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.6;">
+            Save your complete assessment offline as a clean PDF or standalone HTML file.
+          </p>
+          <div class="save-btns-row">
+            <button class="btn btn-secondary btn-sm" id="printReportBtn">🖨️ Save as PDF</button>
+            <button class="btn btn-secondary btn-sm" id="downloadHtmlBtn">📄 Download HTML</button>
+            <button class="btn btn-secondary btn-sm" id="copySummaryBtn">📋 Copy Summary</button>
+          </div>
+        </div>
+
+        <!-- Email Options -->
+        <div class="email-action-box">
+          <div class="save-box-title">
+            <span>✉️ Send to Email Address</span>
+          </div>
+          <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.6;">
+            Send to yourself, your professor, or multiple recipients (separated by commas). Type or press <strong>🎙️ Speak Email</strong>.
+          </p>
+          <div class="email-input-group">
+            <input
+              type="text"
+              id="reportEmailInput"
+              class="email-input"
+              placeholder="e.g. student@gmail.com, mentor@univ.edu"
+              autocomplete="email"
+            />
+            <button class="speak-email-btn" id="speakEmailBtn" title="Speak your email address">
+              <span>🎙️ Speak Email</span>
+            </button>
+            <button class="send-email-btn" id="sendEmailBtn">
+              <span id="sendEmailBtnText">Send Report</span>
+              <span id="sendEmailSpinner" style="display:none">⏳ Sending…</span>
+            </button>
+          </div>
+
+          <div class="email-status-banner" id="emailStatusBanner"></div>
+
+          <div class="email-actions-preview" id="emailActionsPreview" style="display:none;">
+            <button class="btn btn-secondary btn-sm" id="viewEmailPreviewBtn">👁️ View Sent Email in Browser</button>
+            <a class="btn btn-ghost btn-sm" id="downloadEmailFileBtn" target="_blank">📥 Download Email (.html)</a>
+          </div>
+
+          <div class="email-helper-box" id="emailHelperBox" style="display:none;">
+            <strong>💡 Want direct delivery into your real Gmail inbox?</strong><br/>
+            Right now the report was created in <em>Preview Mode</em>. To deliver to real inboxes, add your Gmail App Password to <code>.env</code>:<br/>
+            <code>SMTP_SERVER=smtp.gmail.com</code> | <code>SMTP_PORT=587</code> | <code>SMTP_USER=your_email@gmail.com</code> | <code>SMTP_PASSWORD=your_16_char_app_password</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Email Preview Modal -->
+    <div class="viva-modal-backdrop hidden" id="emailPreviewModal">
+      <div class="viva-modal-box" style="max-width:780px;height:80vh;padding:1.5rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:0.75rem;">
+          <h3 class="viva-modal-title">Sent Email Preview</h3>
+          <button class="btn-icon" id="closeEmailPreviewBtn">✕</button>
+        </div>
+        <iframe id="emailPreviewIframe" style="width:100%;height:100%;border:none;border-radius:8px;background:#0d0f14;"></iframe>
+      </div>
+    </div>
+
+    <!-- Main Results Grid -->
+    <div class="report-grid">
+
+      <!-- Topic Performance -->
+      <div class="card report-card">
+        <h3 class="card-title">📈 Topic Performance</h3>
+        <div id="topicPerformance" class="topic-list"></div>
+      </div>
+
+      <!-- Strong Areas -->
+      <div class="card report-card">
+        <h3 class="card-title">💪 Strengths</h3>
+        <ul id="strongAreas" class="report-list success-list"></ul>
+      </div>
+
+      <!-- Weak Areas -->
+      <div class="card report-card">
+        <h3 class="card-title">⚠️ Areas for Improvement</h3>
+        <ul id="weakAreas" class="report-list error-list"></ul>
+      </div>
+
+      <!-- Misconceptions -->
+      <div class="card report-card">
+        <h3 class="card-title">🔁 Repeated Misconceptions</h3>
+        <ul id="misconceptions" class="report-list warn-list"></ul>
+      </div>
+
+      <!-- Revision Topics -->
+      <div class="card report-card">
+        <h3 class="card-title">📖 Recommended Revision</h3>
+        <ul id="revisionTopics" class="report-list info-list"></ul>
+      </div>
+
+      <!-- Practice Questions -->
+      <div class="card report-card full-width">
+        <h3 class="card-title">🧪 Practice Questions</h3>
+        <div id="practiceQuestions" class="practice-questions-list"></div>
+      </div>
+
+      <!-- Examiner Comments -->
+      <div class="card report-card full-width">
+        <h3 class="card-title">🎓 Examiner's Comments</h3>
+        <div class="examiner-comment" id="examinerComment"></div>
+      </div>
+
+      <!-- Question Review -->
+      <div class="card report-card full-width">
+        <h3 class="card-title">📝 Question-by-Question Review</h3>
+        <div id="questionReview" class="question-review-list"></div>
+      </div>
+    </div>
+
+    <div class="report-actions">
+      <a href="/" class="btn btn-secondary">🏠 Back to Dashboard</a>
+      <button class="btn btn-primary" onclick="window.print()">🖨️ Print Report</button>
+    </div>
+  </main>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script>
+    window.SESSION_ID = {{ session_id }};
+  </script>
+  <script src="/static/js/report.js"></script>
+  <script src="/static/js/arc_reactor.js"></script>
+</body>
+</html>
